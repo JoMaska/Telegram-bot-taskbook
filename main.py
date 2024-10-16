@@ -7,6 +7,7 @@ from aiogram.types import Message
 from src.config.config import Config, load_config
 
 from src.handlers import main_handler
+from src.handlers import callback_handler
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,7 @@ async def main():
     dp = Dispatcher()
     
     dp.include_router(main_handler.router)
+    dp.include_router(callback_handler.router)
     
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
