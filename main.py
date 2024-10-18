@@ -6,8 +6,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message
 from src.config.config import Config, load_config
 
-from src.handlers import main_handler
-from src.handlers import callback_handler
+from src.handlers import main_handler, callback_handler
 
 logger = logging.getLogger(__name__)
 
