@@ -1,18 +1,18 @@
 import logging
-
-from aiogram import F, Router, Bot
+from aiogram import Router, F
 from aiogram.types import CallbackQuery
-
-logger = logging.getLogger(__name__)
 
 router = Router()
 
-@router.callback_query(F.data == "test_task")
-async def callback_query_handler(callback: CallbackQuery, bot: Bot):
-    await bot.send_message(text='test task', chat_id=callback.from_user.id)
-    await callback.answer()
-
-@router.callback_query(F.data == "practical_task")
-async def callback_query_handler(callback: CallbackQuery, bot: Bot):
-    await bot.send_message(text='practical task', chat_id=callback.from_user.id)
-    await callback.answer()
+logger = logging.getLogger(__name__)
+    
+@router.callback_query(F.data == 'test')
+async def test(callback: CallbackQuery):
+    await callback.answer('')
+    await callback.message.answer('test task')
+    
+    
+@router.callback_query(F.data == 'practice')
+async def test(callback: CallbackQuery):
+    await callback.answer('')
+    await callback.message.answer('practical task')
