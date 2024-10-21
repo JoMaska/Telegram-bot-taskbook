@@ -4,7 +4,7 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command
 
-from src.keyboards.inline_keyboards import get_main_inline_keyboard
+from keyboards.inline_keyboards import get_main_inline_keyboard
 
 logger = logging.getLogger(__name__)
 
