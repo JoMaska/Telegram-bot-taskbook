@@ -10,7 +10,9 @@ logger = logging.getLogger(__name__)
 @router.callback_query(F.data == 'test_task')
 async def test(callback: CallbackQuery):
     await callback.message.answer('test task')
+    await callback.answer()
     
 @router.callback_query(F.data == 'practical_task')
 async def test(callback: CallbackQuery):
     await callback.message.answer('practical task')
+    await callback.answer()

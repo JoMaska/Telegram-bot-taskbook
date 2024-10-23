@@ -7,17 +7,21 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from config.config import load_config
 from handlers import main_handler, callback_handler
+from middlewares import DbSessionMiddleware
 
 logger = logging.getLogger(__name__)
 
 async def main():
-    #engine = create_async_engine(config.db.url, echo=True)
-    #sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
     
     config = load_config()
+    
+    engine = create_async_engine(config.db.url, echo=True)
+    sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
 
     bot = Bot(config.bot.token)
     dp = Dispatcher()
+    
+    dp.update.middleware(DbSessionMiddleware(session_pool=sessionmaker))
     
     dp.include_router(main_handler.router)
     dp.include_router(callback_handler.router)
