@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from config.config import load_config
-from handlers import main_handler, callback_handler
+from handlers import main_handler, callback_handler, admin_handler
 from middlewares import DbSessionMiddleware
 
 logger = logging.getLogger(__name__)
@@ -25,6 +25,7 @@ async def main():
     
     dp.include_router(main_handler.router)
     dp.include_router(callback_handler.router)
+    dp.include_router(admin_handler.admin_router)
     
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
