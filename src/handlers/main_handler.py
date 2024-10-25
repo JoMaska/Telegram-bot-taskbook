@@ -13,7 +13,7 @@ router = Router()
 
 @router.message(~IsAdminFilter(), Command('start'))
 async def start_cmd(msg: Message):
-    await msg.answer('Test start command', reply_markup=get_main_inline_keyboard())
+    await msg.answer('Приветствую тебя! Я учебный бот Задачник С++ - проект учеников 1 курса Московского Политеха. \nВы сможете решать различного рода задачи на знание языка, практиковать свои умения и повторить необходимые вам темы. \nУже сейчас вы можете приступить к выполнению заданий. \nВам предложены тестовые и практические задания. \nВыбирайте категорию и приступайте к работе!  Всем удачи!', reply_markup=get_main_inline_keyboard())
 
 @router.message(Command('help'))
 async def start_cmd(msg: Message):
