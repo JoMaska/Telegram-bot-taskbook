@@ -9,6 +9,8 @@ from config.config import load_config
 from handlers import main_handler, callback_handler, admin_handler
 from middlewares import DbSessionMiddleware
 
+from database.models import Base
+
 logger = logging.getLogger(__name__)
 
 async def main():
@@ -17,7 +19,7 @@ async def main():
     
     engine = create_async_engine(config.db.url, echo=True)
     sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
-
+    
     bot = Bot(config.bot.token)
     dp = Dispatcher()
     
@@ -26,7 +28,10 @@ async def main():
     dp.include_router(main_handler.router)
     dp.include_router(callback_handler.router)
     dp.include_router(admin_handler.admin_router)
-    
+
+    # async with engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.create_all)
+        
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
