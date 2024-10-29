@@ -5,10 +5,12 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import Command
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from keyboards.admin_keyboard import get_admin_main_keyboard, get_admin_add_task_keyboard, get_admin_add_test_task_keyboard
 from filters import IsAdminFilter
 from keyboards.inline_keyboard import get_main_inline_keyboard
+from database.models import Task, Answer
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +26,7 @@ class FSMCreateTaskAdmin(StatesGroup):
     answer3 = State()
     answer4 = State()
     true_answer = State()
+    finally_task = State()
     
 @admin_router.message(Command('start'))
 async def start_cmd(msg: Message):
@@ -31,7 +34,7 @@ async def start_cmd(msg: Message):
     await msg.answer('Я учебный бот Задачник С++', reply_markup=get_main_inline_keyboard())
 
 @admin_router.message(F.text == 'Добавить задачу')
-async def create_task(msg: Message, state: FSMContext):
+async def create_task(msg: Message, state: FSMCreateTaskAdmin):
     await msg.answer('Выбери какой тип задачи ты хочешь добавить', reply_markup=get_admin_add_task_keyboard())
     await state.set_state(FSMCreateTaskAdmin.type)
 
@@ -78,18 +81,25 @@ async def create_test_answer4_task(msg: Message, state: FSMContext):
     await state.set_state(FSMCreateTaskAdmin.true_answer)
 
 @admin_router.message(FSMCreateTaskAdmin.true_answer, F.text.in_(['1','2','3','4']))
-async def create_test_answer4_task(msg: Message, state: FSMContext):
+async def create_test_true_answer_task(msg: Message, state: FSMContext):
     await state.update_data(true_answer=msg.text)
     user_data = await state.get_data()
     
-    await msg.answer(f'''Твой выбор:
-Тип задачи: {user_data['type']}
-Группа задачи: {user_data['group']}
-Название задачи: {user_data['name']}
-Первый ответ: {user_data['answer1']}
-Второй ответ: {user_data['answer2']}
-Третий ответ: {user_data['answer3']}
-Четвертый ответ: {user_data['answer4']}
-Правильный ответ указан под номером {user_data['true_answer']}
-''')
+    await msg.answer(f"Твой выбор:\nТип задачи: {user_data['type']}\nГруппа задачи: {user_data['group']}\nНазвание задачи: {user_data['name']}\nПервый ответ: {user_data['answer1']}\nВторой ответ: {user_data['answer2']}\nТретий ответ: {user_data['answer3']}\nЧетвертый ответ: {user_data['answer4']}\nПравильный ответ указан под номером {user_data['true_answer']}\nЕсли все верно, отправь 'Да', иначе отправь 'Нет'")
+    await state.set_state(FSMCreateTaskAdmin.finally_task)
+    
+@admin_router.message(FSMCreateTaskAdmin.finally_task, F.text.lower() == 'да')
+async def create_test_finally_task(msg: Message, state: FSMContext, session: AsyncSession):
+    user_data = await state.get_data()
     await state.clear()
+    answers = [x[-1] == user_data['true_answer'] for x in user_data if 'answer' in x][:4]
+    data = Task(
+        group=user_data['group'],
+        desc=user_data['name'],
+        answers=[Answer(desc=user_data['answer1'], is_correct=answers[0]),
+                 Answer(desc=user_data['answer2'], is_correct=answers[1]),
+                 Answer(desc=user_data['answer3'], is_correct=answers[2]),
+                 Answer(desc=user_data['answer4'], is_correct=answers[3])]
+    )
+    await session.merge(data)
+    await session.commit()
