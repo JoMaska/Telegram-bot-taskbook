@@ -6,10 +6,10 @@ from aiogram import Bot, Dispatcher
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from config.config import load_config
-from handlers import main_handler, callback_handler, admin_handler
+from handlers import main_handler, callback_handler, admin_create_task_handler
 from middlewares import DbSessionMiddleware
 
-from database.models import Base
+#from database.models import Base
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ async def main():
     
     dp.include_router(main_handler.router)
     dp.include_router(callback_handler.router)
-    dp.include_router(admin_handler.admin_router)
+    dp.include_router(admin_create_task_handler.admin_router)
 
     # async with engine.begin() as conn:
     #     await conn.run_sync(Base.metadata.create_all)
