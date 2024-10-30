@@ -7,7 +7,8 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from keyboards.admin_keyboard import get_admin_main_keyboard, get_admin_add_task_keyboard, get_admin_add_test_task_keyboard
+from keyboards.admin_keyboard import get_admin_main_keyboard, get_admin_add_task_keyboard
+from keyboards.keyboard import get_test_task_keyboard
 from filters import IsAdminFilter
 from keyboards.inline_keyboard import get_main_inline_keyboard
 from database.models import Task, Answer
@@ -41,10 +42,10 @@ async def create_task(msg: Message, state: FSMCreateTaskAdmin):
 @admin_router.message(FSMCreateTaskAdmin.type, F.text == "Добавить тестовую задачу")
 async def create_test_task(msg: Message, state: FSMContext):
     await state.update_data(type=msg.text.lower())
-    await msg.answer('Выбери группу', reply_markup=get_admin_add_test_task_keyboard())
+    await msg.answer('Выбери группу', reply_markup=get_test_task_keyboard())
     await state.set_state(FSMCreateTaskAdmin.group)
 
-@admin_router.message(FSMCreateTaskAdmin.group, F.text.in_(get_admin_add_test_task_keyboard().list_button))
+@admin_router.message(FSMCreateTaskAdmin.group, F.text.in_(get_test_task_keyboard().list_button))
 async def create_test_group_task(msg: Message, state: FSMContext):
     await state.update_data(group=msg.text.lower())
     await msg.answer('Напиши название задачи', reply_markup=ReplyKeyboardRemove())
@@ -89,7 +90,7 @@ async def create_test_true_answer_task(msg: Message, state: FSMContext):
     await state.set_state(FSMCreateTaskAdmin.finally_task)
     
 @admin_router.message(FSMCreateTaskAdmin.finally_task, F.text.lower() == 'да')
-async def create_test_finally_task(msg: Message, state: FSMContext, session: AsyncSession):
+async def create_test_finally_task_yes(msg: Message, state: FSMContext, session: AsyncSession):
     user_data = await state.get_data()
     await state.clear()
     answers = [x[-1] == user_data['true_answer'] for x in user_data if 'answer' in x][:4]
@@ -103,3 +104,9 @@ async def create_test_finally_task(msg: Message, state: FSMContext, session: Asy
     )
     await session.merge(data)
     await session.commit()
+    await msg.answer('Данные были добавлены успешно!')
+    
+@admin_router.message(FSMCreateTaskAdmin.finally_task, F.text.lower() == 'нет')
+async def create_test_finally_task_no(msg: Message, state: FSMContext):
+    await state.clear()
+    await msg.answer('Действие отменено', reply_markup=ReplyKeyboardRemove())
