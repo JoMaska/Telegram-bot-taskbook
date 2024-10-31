@@ -8,9 +8,14 @@ def get_admin_main_keyboard() -> ReplyKeyboardMarkup:
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
 
-def get_admin_add_task_keyboard() -> ReplyKeyboardMarkup:
+def get_admin_create_task_keyboard() -> ReplyKeyboardMarkup:
     kb = ReplyKeyboardBuilder()
     kb.button(text='Добавить тестовую задачу')
-    kb.button(text='Добавить практическую задачу')
+    kb.adjust(1)
+    return kb.as_markup(resize_keyboard=True)
+
+def get_admin_delete_task_keyboard() -> ReplyKeyboardMarkup:
+    kb = ReplyKeyboardBuilder()
+    kb.button(text='Удалить тестовую задачу')
     kb.adjust(1)
     return kb.as_markup(resize_keyboard=True)
