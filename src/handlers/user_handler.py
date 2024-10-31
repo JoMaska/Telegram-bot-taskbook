@@ -27,7 +27,7 @@ async def show_test_task(msg: Message, session: AsyncSession, state: FSMContext)
         result = ''.join(f'{id}. {desc}\n' for id, desc in all_results)
         await msg.answer(result, reply_markup=ReplyKeyboardRemove())
         await state.update_data(group=msg.text)
-        await msg.answer('Отправь номер задачи, которую хочешь решить')
+        await msg.answer('Какую задачу ты хочешь решить?  😉 \n\nОтправь номер задачи, и мы приступим к ее решению! 🚀')
         await state.set_state(FSMShowTask.show_task)
     else:
         await msg.answer(f"В группе {msg.text.lower()} нет задач", reply_markup=ReplyKeyboardRemove())
