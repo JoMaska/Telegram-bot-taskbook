@@ -6,11 +6,9 @@
 
 📚 Here you will find a variety of tasks that will help you:
 
- Test your knowledge of C++ language.
- 
- Hone your practical skills.
- 
- Repeat the necessary topics.
+- Test your knowledge of C++ language.
+- Hone your practical skills.
+- Repeat the necessary topics.
  
 💪 You can already start solving test tasks! Choose the category you are interested in and get started. 
 

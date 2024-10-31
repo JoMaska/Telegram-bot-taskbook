@@ -42,15 +42,14 @@ async def show_test_task_with_answer(msg: Message, session: AsyncSession, state:
                 break
         else:
             await state.update_data(desc='')
-    except ValueError:
+        user_data = await state.get_data()
+        id_task = await session.scalar(select(Task.id).where(Task.group == user_data['group'], Task.desc == user_data['desc']))
+        result_answers = await session.execute(select(Answer.desc, Answer.is_correct).where(Answer.task_id == id_task))
+        answers = result_answers.all()
+        if desc != None and answers != []:
+            await state.clear()
+            await msg.answer(f"{desc[0]}\n\n1. {answers[0][0]}\n2. {answers[1][0]}\n3. {answers[2][0]}\n4. {answers[3][0]}", reply_markup=get_answer_test_task_inline_keyboard(buttons=answers))
+        else:
+            await msg.answer(f"Нет такой задачи", reply_markup=ReplyKeyboardRemove())
+    except ValueError or KeyError:
         await msg.answer('Введите число')
-        
-    user_data = await state.get_data()
-    id_task = await session.scalar(select(Task.id).where(Task.group == user_data['group'], Task.desc == user_data['desc']))
-    result_answers = await session.execute(select(Answer.desc, Answer.is_correct).where(Answer.task_id == id_task))
-    answers = result_answers.all()
-    if desc != None and answers != []:
-        await state.clear()
-        await msg.answer(f"{desc[0]}\n\n1. {answers[0][0]}\n2. {answers[1][0]}\n3. {answers[2][0]}\n4. {answers[3][0]}", reply_markup=get_answer_test_task_inline_keyboard(buttons=answers))
-    else:
-        await msg.answer(f"Нет такой задачи", reply_markup=ReplyKeyboardRemove())
