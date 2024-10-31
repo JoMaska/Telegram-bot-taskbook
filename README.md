@@ -1,4 +1,4 @@
-#Meet the C++ Taskbook! 
+Meet the C++ Taskbook! 
 👋 Greetings, future programmers! 
 
 🚀 C++ Taskbook is a project developed by 1st year students of Moscow Polytechnic, which will help you to master C++ programming language.
