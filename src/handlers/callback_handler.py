@@ -21,4 +21,4 @@ async def test(callback: CallbackQuery):
 @router.callback_query(F.data == 'answer_test_true', default_state)
 async def test(callback: CallbackQuery):
     await callback.message.edit_reply_markup()
-    await callback.message.answer('Отлично! 🎉 \n\nТы справился с задачей!  👏')
+    await callback.message.answer('Отлично! 🎉 \n\nТы справился с задачей!  👏\nПопробуешь решить еще одну?', reply_markup=get_test_task_keyboard())

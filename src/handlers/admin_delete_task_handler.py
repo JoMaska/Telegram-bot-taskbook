@@ -42,7 +42,7 @@ async def delete_test_group_task(msg: Message, state: FSMContext, session: Async
         result = ''.join(f'{id}. {desc}\n' for id, desc in all_results)
         await msg.answer(result, reply_markup=ReplyKeyboardRemove())
         await state.update_data(group=msg.text)
-        await msg.answer('Отправь номер задачи для удаления')
+        await msg.answer('Отправь айди задачи для удаления')
         await state.set_state(FSMDeleteTaskAdmin.id)
     else:
         await msg.answer(f"В группе {msg.text.lower()} нет задач", reply_markup=get_admin_main_keyboard())

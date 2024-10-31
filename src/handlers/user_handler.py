@@ -21,12 +21,12 @@ class FSMShowTask(StatesGroup):
     
 @router.message(F.text.in_(get_test_task_keyboard().list_button), default_state)
 async def show_test_task(msg: Message, session: AsyncSession, state: FSMContext):
-    result = await session.execute(select(Task.id, Task.desc).where(Task.group == msg.text))
+    result = await session.execute(select(Task.desc).where(Task.group == msg.text))
     all_results = result.all()
     if all_results != []:
-        result = ''.join(f'{id}. {desc}\n' for id, desc in all_results)
+        result = ''.join(f'{index+1}. {desc[0]}\n' for index, desc in enumerate(all_results))
         await msg.answer(result, reply_markup=ReplyKeyboardRemove())
-        await state.update_data(group=msg.text)
+        await state.update_data(group=msg.text, all_results=all_results)
         await msg.answer('Какую задачу ты хочешь решить?  😉 \n\nОтправь номер задачи, и мы приступим к ее решению! 🚀')
         await state.set_state(FSMShowTask.show_task)
     else:
@@ -34,16 +34,23 @@ async def show_test_task(msg: Message, session: AsyncSession, state: FSMContext)
     
 @router.message(FSMShowTask.show_task)
 async def show_test_task_with_answer(msg: Message, session: AsyncSession, state: FSMContext):
+    user_data = await state.get_data()
     try:
-        data = int(msg.text)
-        user_data = await state.get_data()
-        desc = await session.scalar(select(Task.desc).where(Task.group == user_data['group'], Task.id == data))
-        result_answers = await session.execute(select(Answer.desc, Answer.is_correct).where(Answer.task_id == data))
-        answers = result_answers.all()
-        if desc != None and answers != []:
-            await state.clear()
-            await msg.answer(f"{desc}\n\n1. {answers[0][0]}\n2. {answers[1][0]}\n3. {answers[2][0]}\n4. {answers[3][0]}", reply_markup=get_answer_test_task_inline_keyboard(buttons=answers))
+        for index, desc in enumerate(user_data['all_results']):
+            if int(msg.text) == index+1:
+                await state.update_data(desc=desc[0])
+                break
         else:
-            await msg.answer(f"Нет такой задачи", reply_markup=ReplyKeyboardRemove())
+            await state.update_data(desc='')
     except ValueError:
         await msg.answer('Введите число')
+        
+    user_data = await state.get_data()
+    id_task = await session.scalar(select(Task.id).where(Task.group == user_data['group'], Task.desc == user_data['desc']))
+    result_answers = await session.execute(select(Answer.desc, Answer.is_correct).where(Answer.task_id == id_task))
+    answers = result_answers.all()
+    if desc != None and answers != []:
+        await state.clear()
+        await msg.answer(f"{desc[0]}\n\n1. {answers[0][0]}\n2. {answers[1][0]}\n3. {answers[2][0]}\n4. {answers[3][0]}", reply_markup=get_answer_test_task_inline_keyboard(buttons=answers))
+    else:
+        await msg.answer(f"Нет такой задачи", reply_markup=ReplyKeyboardRemove())
