@@ -25,7 +25,7 @@ async def start_cmd(msg: Message):
 
 @router.message(Command('help'), default_state)
 async def help_cmd(msg: Message):
-    await msg.answer('Бот разработан на языке Python, с использованием фреймворка aiogram, ORM SQLAlchemy и базой данных SQLite.\n\nКоманда: \n\nРазработчики: @JoMaska, @Polina_Petrova\nХудожник: @doshiksha\nСоздатели контента и задач: @Scrws, @hochuokroshku\n\nПроект выложен на GitHub: https://github.com/JoMaska/Telegram-bot-taskbook')
+    await msg.answer('Бот разработан на языке Python, с использованием фреймворка aiogram, ORM SQLAlchemy и базой данных SQLite.\n\nКоманда: \n\nГлавный разработчик: @JoMaska\nПомощник разработчика: @Polina_Petrova\nХудожник: @doshiksha\nСоздатели контента и задач: @Scrws, @hochuokroshku\n\nПроект выложен на GitHub: https://github.com/JoMaska/Telegram-bot-taskbook')
     
 @router.message(IsAdminFilter(), Command('cancel'))
 async def cancel_cmd(msg: Message, state: FSMContext):

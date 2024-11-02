@@ -1,3 +1,6 @@
+<img src="логотип.png" width="300" height="300">
+
+
 # Meet the C++ Taskbook! 
 
 👋 Greetings, future programmers! 
