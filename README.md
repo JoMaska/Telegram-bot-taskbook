@@ -1,3 +1,5 @@
+![логотип бота](https://github.com/user-attachments/assets/01cda330-2899-4da2-8d75-f888dc21202d)
+
 # Meet the C++ Taskbook! 
 
 👋 Greetings, future programmers! 
