@@ -1,4 +1,4 @@
-<img src="логотип бота.png" width="300" height="300">
+<img src="logo.png" width="300" height="300">
 
 # Meet the C++ Taskbook! 
 
