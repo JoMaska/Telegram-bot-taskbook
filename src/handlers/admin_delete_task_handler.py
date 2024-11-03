@@ -36,10 +36,10 @@ async def delete_test_task(msg: Message, state: FSMContext):
 
 @admin_router.message(FSMDeleteTaskAdmin.group, F.text.in_(get_test_task_keyboard().list_button))
 async def delete_test_group_task(msg: Message, state: FSMContext, session: AsyncSession):
-    result = await session.execute(select(Task.id, Task.desc).where(Task.group == msg.text))
+    result = await session.execute(select(Task.id, Task.name).where(Task.group == msg.text))
     all_results = result.all()
     if all_results != []:
-        result = ''.join(f'{id}. {desc}\n' for id, desc in all_results)
+        result = ''.join(f'{id}. {name}\n' for id, name in all_results)
         await msg.answer(result, reply_markup=ReplyKeyboardRemove())
         await state.update_data(group=msg.text)
         await msg.answer('Отправь айди задачи для удаления')

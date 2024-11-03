@@ -9,6 +9,7 @@ class Task(Base):
     __tablename__ = "tasks"
     id: Mapped[int] = mapped_column(primary_key=True)
     group: Mapped[str] = mapped_column()
+    name: Mapped[str] = mapped_column()
     desc: Mapped[str] = mapped_column()
     is_practical: Mapped[bool] = mapped_column(default=False)
     answers = relationship('Answer', backref='task')

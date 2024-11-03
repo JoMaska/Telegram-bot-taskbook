@@ -16,6 +16,7 @@ async def test(callback: CallbackQuery):
     
 @router.callback_query(F.data == 'answer_test_false', default_state)
 async def test(callback: CallbackQuery):
+    await callback.answer()
     await callback.message.answer('Попробуй еще раз! 😉')
 
 @router.callback_query(F.data == 'answer_test_true', default_state)
