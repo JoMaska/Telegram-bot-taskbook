@@ -9,8 +9,6 @@ from config.config import load_config
 from handlers import cmd_handler, callback_handler, admin_create_task_handler, user_handler, admin_delete_task_handler, echo_handler
 from middlewares import DbSessionMiddleware
 
-# from database.models import Base
-
 logger = logging.getLogger(__name__)
 
 async def main():
@@ -32,9 +30,6 @@ async def main():
     dp.include_router(admin_delete_task_handler.admin_router)
     dp.include_router(echo_handler.router)
 
-    # async with engine.begin() as conn:
-    #     await conn.run_sync(Base.metadata.create_all)
-        
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
