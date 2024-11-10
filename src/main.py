@@ -2,12 +2,14 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.redis import RedisStorage
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from config.config import load_config
 from handlers import cmd_handler, callback_handler, admin_create_task_handler, user_handler, admin_delete_task_handler, echo_handler
 from middlewares import DbSessionMiddleware
+from storage.redis_storage import redis_storage
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +20,15 @@ async def main():
     engine = create_async_engine(config.db.url, echo=True)
     sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
     
+    redis = redis_storage(
+        host=config.redis.host,
+        port=config.redis.port,
+        db=config.redis.db)
+
+    storage = RedisStorage(redis=redis)
+
     bot = Bot(config.bot.token)
-    dp = Dispatcher()
+    dp = Dispatcher(storage=storage)
     
     dp.update.middleware(DbSessionMiddleware(session_pool=sessionmaker))
     
